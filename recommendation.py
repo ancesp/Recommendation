@@ -89,4 +89,4 @@ def getRecommendations(product_id):
     return recommendations_list
 
 
-app.run(host=localhost, port=1234)
+app.run(host="0.0.0.0", port=1234)

@@ -77,7 +77,7 @@ for key, item in lookup_table.items():
 
 def getRecommendationsForProduct(product_id):
     recommended_products = []
-    for item in lookup_table[product_id]:
+    for item in lookup_table[int(product_id)]:
         recommended_products.append(item[0])
     recommendations = json.dumps(recommended_products)
     return recommendations

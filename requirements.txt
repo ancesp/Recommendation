@@ -1,6 +1,5 @@
 wheel==0.36.1
 pandas==1.2.4
-pyodbc==4.0.30
 apyori==1.1.2
 numpy==1.19.0
 Flask==1.1.2

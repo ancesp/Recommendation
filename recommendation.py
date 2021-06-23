@@ -4,6 +4,7 @@ from apyori import apriori
 import pickle
 from operator import itemgetter
 import flask
+import json
 
 # load payslip data and product_list
 product_data = pd.read_csv("product_data_ids.csv")
@@ -71,12 +72,18 @@ for key, item in lookup_table.items():
     item = sorted(item, key=itemgetter(1), reverse=True)
     lookup_table[key] = item
 
-print(lookup_table[17])
+# print(lookup_table[17])
 
 
 def getRecommendationsForProduct(product_id):
-    return lookup_table[int(product_id)]
+    recommended_products = []
+    for item in lookup_table[product_id]:
+        recommended_products.append(item[0])
+    recommendations = json.dumps(recommended_products)
+    return recommendations
 
+
+print(getRecommendationsForProduct(17))
 
 # call from backend
 app = flask.Flask(__name__)

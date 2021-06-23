@@ -6,7 +6,7 @@ from operator import itemgetter
 import flask
 
 # load payslip data and product_list
-product_data = pd.read_csv("product_data_names_test.csv")
+product_data = pd.read_csv("product_data_ids.csv")
 product_list = pd.read_csv("products.csv")
 
 
@@ -22,7 +22,7 @@ for i in range(0, n_of_transactions):
         if (str(product_data.values[i, j]) != 'nan'):
             records[i].append(str(product_data.values[i, j]))
 
-print(records)
+# print(records)
 
 association_rules = apriori(
     records, min_support=0.001, min_confidence=0.0, min_lift=0, max_length=2)
@@ -33,7 +33,7 @@ association_results = list(association_rules)
 lookup_table = {}
 
 for index, item in product_list.iterrows():
-    lookup_table[item[1]] = []
+    lookup_table[item[0]] = []
 
 for item in association_results:
     pair = item[0]
@@ -48,16 +48,16 @@ for item in association_results:
     if(len(items) > 1):
 
         # when working with product names
-        lookup_pair_1 = [items[1], item[2][0][2]]
-        lookup_pair_2 = [items[0], item[2][0][2]]
-        lookup_table[items[0]].append(lookup_pair_1)
-        lookup_table[items[1]].append(lookup_pair_2)
+        # lookup_pair_1 = [items[1], item[2][0][2]]
+        # lookup_pair_2 = [items[0], item[2][0][2]]
+        # lookup_table[items[0]].append(lookup_pair_1)
+        # lookup_table[items[1]].append(lookup_pair_2)
 
         # when working with product ids
-        # lookup_pair_1 = [int(float(items[1])), item[2][0][2]]
-        # lookup_pair_2 = [int(float(items[0])), item[2][0][2]]
-        # lookup_table[int(float(items[0]))].append(lookup_pair_1)
-        # lookup_table[int(float(items[1]))].append(lookup_pair_2)
+        lookup_pair_1 = [int(float(items[1])), item[2][0][2]]
+        lookup_pair_2 = [int(float(items[0])), item[2][0][2]]
+        lookup_table[int(float(items[0]))].append(lookup_pair_1)
+        lookup_table[int(float(items[1]))].append(lookup_pair_2)
 
     print(to_print)
     print("Support: " + str(item[1]))
@@ -71,7 +71,7 @@ for key, item in lookup_table.items():
     item = sorted(item, key=itemgetter(1), reverse=True)
     lookup_table[key] = item
 
-print(lookup_table['Hammer'])
+print(lookup_table[17])
 
 
 def getRecommendationsForProduct(product_id):
@@ -84,7 +84,8 @@ app.config["DEBUG"] = True
 
 
 @app.route('/recommendation', methods=['GET'])
-def getRecommendations(product_id):
+def getRecommendations():
+    product_id = flask.request.args.get('productID')
     recommendations_list = getRecommendationsForProduct(product_id)
     return recommendations_list
 

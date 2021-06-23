@@ -100,10 +100,10 @@ for customer in database:
         new_product_list = []
 
         for product in payslip[2]:
-            new_product_list.append(product[1])
+            new_product_list.append(product[0])
 
         product_data.append(new_product_list)
 
 
 product_data_df = pd.DataFrame(product_data)
-product_data_df.to_csv('product_data_names.csv', index=False)
+product_data_df.to_csv('product_data_ids.csv', index=False)

@@ -20,7 +20,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ancesp/Recommender-System:latest
+          tags: ancesp/recommender-system:latest
           file: ./build/Dockerfile
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

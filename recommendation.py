@@ -75,7 +75,7 @@ print(lookup_table[17])
 
 
 def getRecommendationsForProduct(product_id):
-    return lookup_table[product_id]
+    return lookup_table[int(product_id)]
 
 
 # call from backend
@@ -85,7 +85,7 @@ app.config["DEBUG"] = True
 
 @app.route('/recommendation', methods=['GET'])
 def getRecommendations():
-    product_id = flask.request.args.get('productID')
+    product_id = flask.request.args.get('productId')
     recommendations_list = getRecommendationsForProduct(product_id)
     return recommendations_list
 

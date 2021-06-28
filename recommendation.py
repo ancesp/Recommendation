@@ -77,8 +77,19 @@ for key, item in lookup_table.items():
 
 def getRecommendationsForProduct(product_id):
     recommended_products = []
+    product_information = product_list.loc[product_list['product_id'] == int(
+        product_id)]
+    product_category = product_information['product_category']
+    # print(product_category)
     for item in lookup_table[int(product_id)]:
-        recommended_products.append(item[0])
+
+        item_information = product_list.loc[product_list['product_id'] == item[0]]
+        item_category = item_information['product_category']
+        if(item_category.to_string(
+            index=False) == product_category.to_string(
+                index=False)):
+            recommended_products.append(item[0])
+
     recommendations = json.dumps(recommended_products)
     return recommendations
 
@@ -97,4 +108,4 @@ def getRecommendations():
     return recommendations_list
 
 
-app.run(host="0.0.0.0", port=1234)
+#app.run(host="0.0.0.0", port=1234)

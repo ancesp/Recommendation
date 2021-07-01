@@ -7,7 +7,7 @@ import flask
 import json
 
 # load payslip data and product_list
-product_data = pd.read_csv("product_data_ids.csv")
+product_data = pd.read_csv("payslips.csv")
 product_list = pd.read_csv("products.csv")
 
 
@@ -85,16 +85,16 @@ def getRecommendationsForProduct(product_id):
 
         item_information = product_list.loc[product_list['product_id'] == item[0]]
         item_category = item_information['product_category']
-        if(item_category.to_string(
-            index=False) == product_category.to_string(
-                index=False)):
-            recommended_products.append(item[0])
+        # if(item_category.to_string(
+        #    index=False) == product_category.to_string(
+        #        index=False)):
+        recommended_products.append(item[0])
 
     recommendations = json.dumps(recommended_products)
     return recommendations
 
 
-print(getRecommendationsForProduct(17))
+print(getRecommendationsForProduct(12))
 
 # call from backend
 app = flask.Flask(__name__)
@@ -108,4 +108,4 @@ def getRecommendations():
     return recommendations_list
 
 
-#app.run(host="0.0.0.0", port=1234)
+app.run(host="0.0.0.0", port=1234)

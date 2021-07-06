@@ -7,8 +7,8 @@ import flask
 import json
 
 # load payslip data and product_list
-product_data = pd.read_csv("payslips.csv")
-product_list = pd.read_csv("products.csv")
+product_data = pd.read_csv("payslips_ids_old.csv")
+product_list = pd.read_csv("products_old.csv")
 
 
 # get parameters for algorithm
@@ -48,8 +48,6 @@ for item in association_results:
 
     if(len(items) > 1):
 
-        print(type(items[1]))
-        # when working with product names
         lookup_pair_1 = [items[1], item[2][0][2]]
         lookup_pair_2 = [items[0], item[2][0][2]]
         lookup_table[items[0]].append(lookup_pair_1)
@@ -70,9 +68,19 @@ for key, item in lookup_table.items():
 
 def getRecommendationsForProduct(product_id):
     recommended_products = []
+    product_information = product_list.loc[product_list['product_id'] == int(
+        product_id)]
+    product_category = product_information['product_category']
+
     for item in lookup_table[int(product_id)]:
 
-        recommended_products.append(item[0])
+        item_information = product_list.loc[product_list['product_id'] == item[0]]
+        item_category = item_information['product_category']
+
+        if(item_category.to_string(
+           index=False) == product_category.to_string(
+                index=False)):
+            recommended_products.append(item[0])
 
     recommendations = json.dumps(recommended_products)
     return recommendations

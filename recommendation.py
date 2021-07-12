@@ -7,11 +7,11 @@ import flask
 import json
 
 # load payslip data and product_list
-product_data = pd.read_csv("payslips.csv")
+payslips = pd.read_csv("payslips.csv")
 product_list = pd.read_csv("products.csv")
 
 # get parameters for algorithm
-df_shape = product_data.shape
+df_shape = payslips.shape
 n_of_transactions = df_shape[0]
 n_of_products = df_shape[1]
 
@@ -19,8 +19,8 @@ records = []
 for i in range(0, n_of_transactions):
     records.append([])
     for j in range(0, n_of_products):
-        if (str(product_data.values[i, j]) != 'nan'):
-            records[i].append(str(int(product_data.values[i, j])))
+        if (str(payslips.values[i, j]) != 'nan'):
+            records[i].append(str(int(payslips.values[i, j])))
 
 # print(records)
 

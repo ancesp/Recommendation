@@ -7,7 +7,7 @@ import flask
 import json
 
 # load payslip data and product_list
-payslips = pd.read_csv("payslips.csv")
+payslips = pd.read_csv("payslips_cleaned.csv")
 product_list = pd.read_csv("products.csv")
 
 # get parameters for algorithm
@@ -25,7 +25,7 @@ for i in range(0, n_of_transactions):
 # print(records)
 
 association_rules = apriori(
-    records, min_support=0.2, min_confidence=0.0, min_lift=1, max_length=2)
+    records, min_support=0.1, min_confidence=0.0, min_lift=1, max_length=2)
 association_results = list(association_rules)
 
 

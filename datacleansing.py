@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 
-payslips_df = pd.read_csv('./payslips.csv')
+payslips_df = pd.read_csv('./test_payslips.csv')
 
 double_product = 0
 
@@ -11,24 +11,25 @@ n_of_products = df_shape[1]
 
 records = []
 for i in range(0, n_of_transactions):
+    # print(i)
     records.append([])
     for j in range(0, n_of_products):
-        if (str(payslips_df.values[i, j]) != 'nan'):
-            records[i].append(str(int(payslips_df.values[i, j])))
+        if ((str(payslips_df.values[i, j]) != 'nan')):
+            # print("--")
+            records[i].append(str(payslips_df.values[i, j]))
 
-# print(records)
-
+# Step 1: check for multiple seasonal products and remove
 contains_seasonal_product = False
 seasonal_product = 0
 for payslip in records:
 
-    #print("before", payslip)
+    # print("before", payslip)
 
     for product in payslip:
 
         # print(product)
         if (contains_seasonal_product == False and (product == '5' or product == '7')):
-            print("in if")
+            # print("in if")
             contains_seasonal_product = True
             seasonal_product = product
 
@@ -39,12 +40,19 @@ for payslip in records:
     contains_seasonal_product = False
     seasonal_product = 0
 
+# Step 2: Check for double products and remove
+for payslip in records:
 
-#         for double_product in payslip.index(product):
+    for product in payslip:
 
-#             if(product[1] == double_product[1]):
-#                 payslip[2].remove(double_product)
-    print("after", payslip)
+        #print(payslip[0], payslip.index(product), payslip.__len__())
+        if(payslip.index(product) != payslip.__len__() - 1):
+            print(payslip[payslip.index(product) + 1])
+            for double_product in payslip[payslip.index(product) + 1:]:
+
+                if(product == double_product):
+                    payslip.remove(double_product)
+
 
 records_df = pd.DataFrame(records)
-records_df.to_csv('payslips_cleaned.csv', index=False)
+records_df.to_csv('payslips_w_irr.csv', index=False)

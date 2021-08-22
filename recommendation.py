@@ -1,13 +1,11 @@
 import pandas as pd
-import numpy as np
 from apyori import apriori
-import pickle
 from operator import itemgetter
 import flask
 import json
 
 # load payslip data and product_list
-payslips = pd.read_csv("payslips_cleaned.csv")
+payslips = pd.read_csv("payslips_w_irr_cleaned.csv")
 product_list = pd.read_csv("products.csv")
 
 # get parameters for algorithm
@@ -20,20 +18,16 @@ for i in range(0, n_of_transactions):
     records.append([])
     for j in range(0, n_of_products):
         if (str(payslips.values[i, j]) != 'nan'):
-            records[i].append(str(int(payslips.values[i, j])))
-
-# print(records)
+            records[i].append(str(payslips.values[i, j]))
 
 association_rules = apriori(
-    records, min_support=0.1, min_confidence=0.0, min_lift=1, max_length=2)
+    records, min_support=0.01, min_confidence=0.0, min_lift=0.00001, max_length=2)
 association_results = list(association_rules)
-
 
 # create lookup table for results
 lookup_table = {}
 
 for index, item in product_list.iterrows():
-    # print(item[0])
     lookup_table[str(item[0])] = []
 
 for item in association_results:
@@ -54,19 +48,24 @@ for item in association_results:
         lookup_table[str(items[0])].append(lookup_pair_1)
         lookup_table[str(items[1])].append(lookup_pair_2)
 
-    print(to_print)
-    print("Support: " + str(item[1]))
-    print("Confidence: " + str(item[2][0][2]))
-    print("Lift: " + str(item[2][0][3]))
-    print("=======================================")
+    if(to_print.__len__() == 7):
+        print(to_print)
+        print("Support: " + str(item[1]))
+        print("Confidence: " + str(item[2][0][2]))
+        print("Lift: " + str(item[2][0][3]))
+        print("=======================================")
+    else:
+        print(to_print)
+        print("Support: " + str(item[1]))
+        print("Confidence: " + str(item[2][1][2]))
+        print("Lift: " + str(item[2][1][3]))
+        print("=======================================")
 
 
 # sort recommendations by confidence (higher to lower)
 for key, item in lookup_table.items():
     item = sorted(item, key=itemgetter(1), reverse=True)
     lookup_table[key] = item
-
-print(lookup_table)
 
 
 def getRecommendationsForProduct(product_id):
@@ -77,8 +76,6 @@ def getRecommendationsForProduct(product_id):
     recommendations = json.dumps(recommended_products)
     return recommendations
 
-
-print(getRecommendationsForProduct(2))
 
 # call from backend
 app = flask.Flask(__name__)

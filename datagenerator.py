@@ -5,9 +5,9 @@ import pandas as pd
 from date_generation import date_generation
 
 # random.seed(0)
-
 r = random.Random(0)
 
+# connect to Neo4j Database
 uri = "neo4j://localhost:7687"
 driver = GraphDatabase.driver(uri, auth=(
     "neo4j", "test123"))
@@ -15,11 +15,11 @@ session = driver.session()
 result = session.run(
     "MATCH (product:Product)-[relation:relatedTo]-(product2:Product) RETURN product.id, relation.correlation, product2.id")
 
+# create product matrix and save products with their correalation to other products
 product_matrix = []
 
 previous_id = 0
 for record in result:
-    print(record)
 
     if(record['product.id'] != previous_id):
         product_matrix.append([record['product.id'], [], []])
@@ -28,14 +28,21 @@ for record in result:
     product_matrix[-1][1].append(int(record['relation.correlation']))
     product_matrix[-1][2].append(record['product2.id'])
 
+# create payslips
 payslips = []
 
-for i in range(10000):
+for i in range(715):
     payslips.append([])
 
 # add first product
 for payslip in payslips:
     payslip.append(r.randrange(1, 10))
+
+payslip_lengths = []
+
+# define length of each payslip so that the mean of all payslips is ~6
+# ????????
+# for i in range(715):
 
 # get probabilities for items
 sum_distances = 0
@@ -48,17 +55,30 @@ for i in product_matrix:
                   "is", i[1][test] / sum(i[1]))
             test += 1
 
+irrelevant_product_index = 0
+irrelevant_product = "product"
+
 # add further products
 for payslip in payslips:
-    # select a r length the payslip should have (between 1 and 10)
-    payslip_length = r.randrange(1, 11)
+
+    # select a random length the payslip should have (between 1 and 15)
+    payslip_length = r.randrange(1, 16)
+
+    # select how many irrelevant products should be in the payslip
+    number_irrelevant_products = r.randrange(1, payslip_length + 1)
+
     while payslip_length > 1:
 
-        # get last product on payslip for getting neo4j distances (or should this only be based on first added product?)
-        last_product = payslip[-1]
-        for i in product_matrix:
-            if (i[0] == last_product):
-                payslip.append(r.choices(i[2], i[1], k=1)[0])
+        if(payslip_length > number_irrelevant_products + 1):
+
+            # get last product on payslip for getting neo4j distances (or should this only be based on first added product?)
+            last_product = payslip[-1]
+            for i in product_matrix:
+                if (i[0] == last_product):
+                    payslip.append(r.choices(i[2], i[1], k=1)[0])
+        else:
+            payslip.append(irrelevant_product + str(irrelevant_product_index))
+            irrelevant_product_index += 1
 
         payslip_length -= 1
 
@@ -67,15 +87,4 @@ driver.close()
 
 # save payslip data to csv
 payslip_df = pd.DataFrame(payslips)
-payslip_df.to_csv('payslips.csv', index=False)
-
-
-# create further payslip data (date, product amount etc.)
-# payslip_db = []
-# for payslip in payslips:
-#     # for the payslip database add to each row payslip id, customer id and date
-#     date = date_generation.get_generated_date()
-#     print(date[1])
-#     payslip_db.append([payslips.index(payslip), r.randint(
-#         0, 99), date[0]])
-#     print(payslip_db[-1])
+payslip_df.to_csv('test_payslips.csv', index=False)
